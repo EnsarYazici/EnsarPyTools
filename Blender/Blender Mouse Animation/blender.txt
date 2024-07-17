@@ -1,0 +1,39 @@
+import bpy
+
+def update_object_position(file_path):
+    # Dosyayı aç ve içeriği oku
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    
+    # İlk satır başlık satırıdır, veri satırlarından başla
+    data_lines = lines[1:]
+
+    # Seçili objeyi al
+    obj = bpy.context.active_object
+    
+    # Eğer bir obje seçili değilse, uyarı ver
+    if not obj:
+        print("Herhangi bir obje seçili değil.")
+        return
+    
+    # Frame ve koordinatları güncelle
+    for i, line in enumerate(data_lines):
+        frame_number = i + 1  # Frame numarası 1'den başlar
+        parts = line.strip().split(',')
+        x = float(parts[1])
+        y = float(parts[2])
+        
+        # Frame'leri ayarla
+        bpy.context.scene.frame_set(frame_number)
+        
+        # Objeyi hareket ettir (Blender'da genellikle z ekseni yukarı doğrudur)
+        obj.location = (x, 0, y)  # Eğer farklı bir düzlemde hareket ettirmek istiyorsanız, bu kısmı değiştirebilirsiniz
+        
+        # Bu konumu keyframe olarak ekle
+        obj.keyframe_insert(data_path="location", index=-1)  # index=-1 tüm lokasyon eksenlerini kaydeder
+
+# Dosya yolu
+file_path = 'mouse_positions.txt'
+
+# Fonksiyonu çağır
+update_object_position(file_path)
