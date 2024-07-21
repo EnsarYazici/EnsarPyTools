@@ -1,0 +1,9 @@
+{
+    "users": [
+        {
+            "username": "user1",
+            "password_hash": "$2b$12$IRK/3LMv.fUUMKMtlEWka.EvcQakcG.xeZx1bZ7wyxpdAuSOjAMQC",
+            "usage_count": 4
+        }
+    ]
+}
