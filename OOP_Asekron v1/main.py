@@ -1,7 +1,8 @@
 import asyncio
-from object1 import Object1
-from object2 import Object2
 import Workers
+# from object1 import Object1
+# from object2 import Object2
+
 # async def main():
 #     obj1 = Object1()
 #     obj2 = Object2()
