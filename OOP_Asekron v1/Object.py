@@ -15,5 +15,5 @@ class ObjectBase:
     async def on_start(self):
         pass  # Subclasses can override this method
 
-    def stop(self)
+    def stop(self):
         self.running = False
