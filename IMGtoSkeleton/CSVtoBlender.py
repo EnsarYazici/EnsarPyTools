@@ -24,9 +24,9 @@ with open(csv_path, newline='') as csvfile:
     for row in reader:
         frame = int(row['frame'])
         landmark = row['landmark']
-        x = float(row['x'])
-        y = float(row['y'])
-        z = float(row['z'])
+        x = float(row['x']) -0.5
+        y = float(row['z'])
+        z = -float(row['y']) + 1.0
 
         if frame not in frames:
             frames[frame] = {}
@@ -44,7 +44,8 @@ for landmark in landmarks:
         bone = armature_data.edit_bones.new(landmark)
         bone.head = (0, 0, 0)
         bone.tail = (0, 0.1, 0)  # Kemiklerin bir boyutu olması gerektiği için küçük bir uzunluk veriyoruz
-
+if "Bone" in armature_data.edit_bones:
+    armature_data.edit_bones.remove(armature_data.edit_bones["Bone"])
 # Pose moduna geçin
 bpy.ops.object.mode_set(mode='POSE')
 
