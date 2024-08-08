@@ -183,6 +183,52 @@ for frame in frames:
 bpy.context.scene.frame_set(0)
 ```
 ```py
+# SetValidEmptys.py
+
+import bpy
+
+# Armature'ı seçin
+armature = bpy.data.objects['PoseArmature']
+bpy.context.view_layer.objects.active = armature
+
+# Pose moduna geçin
+bpy.ops.object.mode_set(mode='POSE')
+
+# Tüm kemikler için mevcut "Empty" nesneleri bulun, lokasyonlarını eşitleyin ve "Child Of" constraint ekleyin
+for bone in armature.pose.bones:
+    # Empty nesnesini isme göre bulun
+    empty_name = f'empty_{bone.name}'
+    empty = bpy.data.objects.get(empty_name)
+    
+    if empty is not None:
+        # Empty nesnesinin lokasyonunu kemiğin lokasyonuna eşitleyin
+        empty.location = armature.matrix_world @ bone.head
+        
+        # Mevcut empty nesnesine child of constraint ekleyin
+        constraint = empty.constraints.new(type='CHILD_OF')
+        constraint.target = armature
+        constraint.subtarget = bone.name
+        
+        # Constraint'i uygulayın
+        bpy.context.view_layer.objects.active = empty
+        bpy.ops.object.visual_transform_apply()
+        bpy.ops.object.constraints_clear()
+        
+        # Constraint'i tekrar ekleyin
+        constraint = empty.constraints.new(type='CHILD_OF')
+        constraint.target = armature
+        constraint.subtarget = bone.name
+
+        # Armature'ı tekrar aktif yapın
+        bpy.context.view_layer.objects.active = armature
+        bpy.ops.object.mode_set(mode='POSE')
+
+# Pose modundan çıkın
+bpy.ops.object.mode_set(mode='OBJECT')
+
+print("Constraints have been added and empty objects have been positioned.")
+```
+```py
 # CreatingEmptys.py
 
 import bpy
