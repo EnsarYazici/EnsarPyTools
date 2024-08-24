@@ -1,5 +1,5 @@
 def Regex_AtoB(Text, A, B, name="word", incA=False, incB=False, ignorecase=False, dotall=False, target="(.*?)", returnList=False):
-    # For Name target -> ([a-zA-ZğüşıöçĞÜŞİÖÇ\s-]+)
+    # For Name target -> ([a-zA-ZğüşıöçĞÜŞİÖÇ\s-]+) if Names have - or . use ([a-zA-ZğüşıöçĞÜŞİÖÇ\s.-]+)
     # For Everything target -> (.*?)
     pattern = fr'{A}{target}{B}'
 
