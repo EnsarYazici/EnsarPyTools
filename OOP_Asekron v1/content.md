@@ -45,7 +45,7 @@ class ObjectBase:
 
     def stop(self):
         self.running = False
-        print(f"Object{self.id} stopped.")self.id
+        print(f"Object{self.id} stopped.")
 ```
 ```py
 # object1.py ( The for loop is there for testing, it simulates the object having a job with a loop inside itself. So it doesn't have to be in the default code block. )
