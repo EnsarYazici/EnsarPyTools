@@ -54,7 +54,7 @@ def DogrulamaKoduAl_Oulook(metin):
     # \s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?"
 
     try:
-        pattern = fr"Ek\s*(?:.*)?\s*Do[gĞ]rulama\s*Kod[u]?\s*[:]{patfull}"
+        pattern = fr"Ek\s*(?:.*)?\s*Do[gĞ]rulama\s*Kod[u]?\s*[:]?{patfull}"
         DogrulamaKodu = re.findall(pattern, metin,re.IGNORECASE)
         if DogrulamaKodu:
             kod = ""
@@ -67,14 +67,14 @@ def DogrulamaKoduAl_Oulook(metin):
                 result = kod
             else:
                 print("else1")
-                pattern = r"Do[gĞ]rulama\s*Kod[u]?\s*[:]\s*(?:\d-)?\s*([A-Za-z0-9]+)"
+                pattern = r"Do[gĞ]rulama\s*Kod[u]?\s*[:]?\s*(?:\d-)?\s*([A-Za-z0-9]+)"
                 DogrulamaKodu = re.findall(pattern, metin,re.IGNORECASE)
                 if DogrulamaKodu:
                     print(f"Doğrulama -> {DogrulamaKodu[0]}")
                     result = DogrulamaKodu[0]
         else:
             print("else2")
-            pattern = r"Do[gĞ]rulama\s*Kod[u]?\s*[:]\s*(?:\d-)?\s*([A-Za-z0-9]+)"
+            pattern = r"Do[gĞ]rulama\s*Kod[u]?\s*[:]?\s*(?:\d-)?\s*([A-Za-z0-9]+)"
             DogrulamaKodu = re.findall(pattern, metin,re.IGNORECASE)
             if DogrulamaKodu:
                 print(f"Doğrulama -> {DogrulamaKodu[0]}")
