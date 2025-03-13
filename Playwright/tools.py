@@ -15,7 +15,7 @@ async def E_Devlet_Login(page,tc,passw):
     captchaImage = await is_element_exists(page, "img.captchaImage", timeout=5000)
     if captchaImage:
         await captchaImage.screenshot(path="captcha.png")
-        captcha = await SolveCaptcha_ImageToText("4900d0d0aed7773daa25edb85d8ac883", "captcha.png")
+        captcha = await SolveCaptcha_ImageToText("API_KEY", "captcha.png")
         await page.get_by_label("Güvenlik Kodu").fill(captcha)
 
     # Giriş Yap butonuna bas
