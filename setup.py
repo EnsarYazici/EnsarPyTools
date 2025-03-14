@@ -3,8 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="OOP_Asekron",            # Paket adınız
     version="0.1.0",               # Paket versiyonu
-    description="OOP Asekron için kısa açıklama",
-    long_description=open("README.md", encoding="utf-8").read(),  # README dosyasından uzun açıklama alabilirsiniz
+    description="OOP Asekron için kısa açıklama",  # README dosyasından uzun açıklama alabilirsiniz
     long_description_content_type="text/markdown",  # README dosyanız markdown formatındaysa
     author="Adınız Soyadınız",     # Paket yazarınız
     author_email="email@example.com",  # İletişim e-posta adresiniz
