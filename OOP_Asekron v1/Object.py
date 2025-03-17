@@ -16,6 +16,6 @@ class ObjectBase:
     async def start(self):
         pass  # Subclasses can override this method
 
-    def stop(self):
+    async def stop(self):
         self.running = False
-        print(f"Object{self.id} sonlandirildi")
+        print(f"Object stopped: {self.id}")
