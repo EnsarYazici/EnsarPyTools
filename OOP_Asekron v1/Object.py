@@ -3,10 +3,10 @@ import asyncio
 class ObjectBase:
     def __init__(self,id = -1, update_interval=1.0):
         self.update_interval = update_interval
-        self.running = True
         self.id = id
 
     async def run(self):
+        self.running = True
         await self.start()
         if hasattr(self, 'update'):
             while self.running:
