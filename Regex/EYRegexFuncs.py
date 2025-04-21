@@ -80,8 +80,7 @@ import asyncio
 
 async def find_between(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
     """
-    Asenkron olarak, verilen bir metin içinde A ve B regex desenleri arasında kalan metinleri bulur ve liste olarak döndürür.
-    Event loop’un uzun işlem günlüğünde tek bir noktada bloklanmaması için her eşleşmeden sonra kontrolü iade eder.
+    Verilen bir metin içinde A ve B regex desenleri arasında kalan metinleri bulur ve liste olarak döndürür.
 
     Parametreler:
         text (str): Üzerinde arama yapılacak metin.
@@ -97,7 +96,8 @@ async def find_between(text, A, B, includeA=False, includeB=False, flags=None, c
         list: Eşleşen metinlerin listesi (context_size > 0 ise bağlam dahil).
     """
     # Flag'leri birleştir
-    flags = flags or []
+    if flags is None:
+        flags = []
     combined_flags = 0
     for flag in flags:
         combined_flags |= flag
@@ -128,21 +128,25 @@ async def find_between(text, A, B, includeA=False, includeB=False, flags=None, c
         group3 = match.group(3)
 
         # Eşleşme segmenti
-        segment = ''
+        segment = ""
         if includeA:
             segment += group1
         segment += group2
         if includeB:
             segment += group3
 
-        if context_size > 0:
+        if context_size and context_size > 0:
+            # Segment başlangıç/bitiş indeksleri
             seg_start = match.start(1) if includeA else match.start(2)
             seg_end = match.end(3) if includeB else match.end(2)
+            # Bağlam aralıkları
             ctx_start = max(0, seg_start - context_size)
             ctx_end = min(len(text), seg_end + context_size)
+            # Bağlam + segment
             prefix = text[ctx_start:seg_start]
             suffix = text[seg_end:ctx_end]
-            result.append(prefix + segment + suffix)
+            snippet = prefix + segment + suffix
+            result.append(snippet)
         else:
             result.append(segment)
 
