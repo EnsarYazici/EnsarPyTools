@@ -1,6 +1,6 @@
 import re
 
-def find_between(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
+def EY_RegexAtoB(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
     """
     Verilen bir metin içinde A ve B regex desenleri arasında kalan metinleri bulur ve liste olarak döndürür.
 
@@ -78,7 +78,7 @@ def find_between(text, A, B, includeA=False, includeB=False, flags=None, check_i
 import re
 import asyncio
 
-async def find_between(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
+async def EY_RegexAtoB(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
     """
     Verilen bir metin içinde A ve B regex desenleri arasında kalan metinleri bulur ve liste olarak döndürür.
 
