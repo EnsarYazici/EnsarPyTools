@@ -1,93 +1,152 @@
-def Regex_AtoB(Text, A, B, name="word", incA=False, incB=False, ignorecase=False, dotall=False, target="(.*?)", returnList=False):
-    # For Name target -> ([a-zA-ZğüşıöçĞÜŞİÖÇ\s-]+) if Names have - or . use ([a-zA-ZğüşıöçĞÜŞİÖÇ\s.-]+)
-    # For Everything target -> (.*?)
-    pattern = fr'{A}{target}{B}'
+import re
 
-    flags = 0
-    if ignorecase:
-        flags |= re.IGNORECASE
-    if dotall:
-        flags |= re.DOTALL
+def find_between(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
+    """
+    Verilen bir metin içinde A ve B regex desenleri arasında kalan metinleri bulur ve liste olarak döndürür.
 
-    if returnList:
-        matches = re.findall(pattern, Text, flags)
+    Parametreler:
+        text (str): Üzerinde arama yapılacak metin.
+        A (str): Başlangıç regex deseni.
+        B (str): Bitiş regex deseni.
+        includeA (bool): A deseni sonuca dahil edilsin mi? Varsayılan: False
+        includeB (bool): B deseni sonuca dahil edilsin mi? Varsayılan: False
+        flags (list): Regex flag'leri (örneğin [re.IGNORECASE, re.MULTILINE]). Varsayılan: None
+        check_inputs (bool): A ve B desenlerinin geçerliliği ve boşluk kontrolü yapılacak mı? Varsayılan: False
+        context_size (int): Eşleşmenin öncesinden ve sonrasından kaç karakterlik bağlam ekleneceği. Varsayılan: 0
 
-        if matches:
-            results = []
-            for match in matches:
-                result = match
-                if incA:
-                    result = A + result
-                if incB:
-                    result = result + B
-                results.append(result.strip())
+    Dönen Değer:
+        list: Eşleşen metinlerin listesi (context_size > 0 ise bağlam dahil).
+    """
+    # Flag'leri birleştir
+    if flags is None:
+        flags = []
+    combined_flags = 0
+    for flag in flags:
+        combined_flags |= flag
 
-            return results
+    # Hata kontrolü
+    if check_inputs:
+        if not A:
+            raise ValueError("A deseni boş olamaz")
+        if not B:
+            raise ValueError("B deseni boş olamaz")
+        try:
+            re.compile(A)
+        except re.error as e:
+            raise ValueError(f"A deseni geçersiz regex: {e}")
+        try:
+            re.compile(B)
+        except re.error as e:
+            raise ValueError(f"B deseni geçersiz regex: {e}")
+
+    # Regex objesi oluştur
+    pattern = re.compile(f"({A})(.*?)({B})", flags=combined_flags)
+    result = []
+
+    for match in pattern.finditer(text):
+        # Grup dizileri
+        group1 = match.group(1)
+        group2 = match.group(2)
+        group3 = match.group(3)
+
+        # Eşleşme segmenti
+        segment = ""
+        if includeA:
+            segment += group1
+        segment += group2
+        if includeB:
+            segment += group3
+
+        if context_size and context_size > 0:
+            # Segment başlangıç/bitiş indeksleri
+            seg_start = match.start(1) if includeA else match.start(2)
+            seg_end = match.end(3) if includeB else match.end(2)
+            # Bağlam aralıkları
+            ctx_start = max(0, seg_start - context_size)
+            ctx_end = min(len(text), seg_end + context_size)
+            # Bağlam + segment
+            prefix = text[ctx_start:seg_start]
+            suffix = text[seg_end:ctx_end]
+            snippet = prefix + segment + suffix
+            result.append(snippet)
         else:
-            print(f"Regex_AtoB -> {name} is Not Matched")
-            return ["Tanimlanamadi"]
-    else:
-        match = re.search(pattern, Text, flags)
+            result.append(segment)
 
-        if match:
-            result = match.group(1)
-            if incA:
-                result = A + result
-            if incB:
-                result = result + B
+    return result
 
-            return result.strip()
+
+import re
+import asyncio
+
+async def find_between(text, A, B, includeA=False, includeB=False, flags=None, check_inputs=False, context_size=0):
+    """
+    Asenkron olarak, verilen bir metin içinde A ve B regex desenleri arasında kalan metinleri bulur ve liste olarak döndürür.
+    Event loop’un uzun işlem günlüğünde tek bir noktada bloklanmaması için her eşleşmeden sonra kontrolü iade eder.
+
+    Parametreler:
+        text (str): Üzerinde arama yapılacak metin.
+        A (str): Başlangıç regex deseni.
+        B (str): Bitiş regex deseni.
+        includeA (bool): A deseni sonuca dahil edilsin mi? Varsayılan: False
+        includeB (bool): B deseni sonuca dahil edilsin mi? Varsayılan: False
+        flags (list): Regex flag'leri (örneğin [re.IGNORECASE, re.MULTILINE]). Varsayılan: None
+        check_inputs (bool): A ve B desenlerinin geçerliliği ve boşluk kontrolü yapılacak mı? Varsayılan: False
+        context_size (int): Eşleşmenin öncesinden ve sonrasından kaç karakterlik bağlam ekleneceği. Varsayılan: 0
+
+    Dönen Değer:
+        list: Eşleşen metinlerin listesi (context_size > 0 ise bağlam dahil).
+    """
+    # Flag'leri birleştir
+    flags = flags or []
+    combined_flags = 0
+    for flag in flags:
+        combined_flags |= flag
+
+    # Hata kontrolü
+    if check_inputs:
+        if not A:
+            raise ValueError("A deseni boş olamaz")
+        if not B:
+            raise ValueError("B deseni boş olamaz")
+        try:
+            re.compile(A)
+        except re.error as e:
+            raise ValueError(f"A deseni geçersiz regex: {e}")
+        try:
+            re.compile(B)
+        except re.error as e:
+            raise ValueError(f"B deseni geçersiz regex: {e}")
+
+    # Regex objesi oluştur
+    pattern = re.compile(f"({A})(.*?)({B})", flags=combined_flags)
+    result = []
+
+    for match in pattern.finditer(text):
+        # Grup dizileri
+        group1 = match.group(1)
+        group2 = match.group(2)
+        group3 = match.group(3)
+
+        # Eşleşme segmenti
+        segment = ''
+        if includeA:
+            segment += group1
+        segment += group2
+        if includeB:
+            segment += group3
+
+        if context_size > 0:
+            seg_start = match.start(1) if includeA else match.start(2)
+            seg_end = match.end(3) if includeB else match.end(2)
+            ctx_start = max(0, seg_start - context_size)
+            ctx_end = min(len(text), seg_end + context_size)
+            prefix = text[ctx_start:seg_start]
+            suffix = text[seg_end:ctx_end]
+            result.append(prefix + segment + suffix)
         else:
-            print(f"Regex_AtoB -> {name} is Not Matched")
-            return "Tanimlanamadi"
+            result.append(segment)
 
+        # Kısa bir uyku ile event loop'u serbest bırak
+        await asyncio.sleep(0)
 
-def DogrulamaKoduAl_Oulook(metin):
-    result = ""
-    pat = "(?:(?:\d{1,2})?\s*[-.])?\s*([A-Z0-9]{20})"
-    patfull = ""
-    for i in range(7):
-        patfull += f"\s*(?:{pat})?"
-
-    # print(patfull)
-
-    # \s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?\s*(?:{pat})?"
-
-    try:
-        pattern = fr"Ek\s*(?:.*)?\s*Do[gĞ]rulama\s*Kod[u]?\s*[:]{patfull}"
-        DogrulamaKodu = re.findall(pattern, metin,re.IGNORECASE)
-        if DogrulamaKodu:
-            kod = ""
-            for i in range(len(DogrulamaKodu[0])):
-                if DogrulamaKodu[0][(len(DogrulamaKodu[0])-1)-i] != "Not" and DogrulamaKodu[0][(len(DogrulamaKodu[0])-1)-i] != "":
-                    kod = DogrulamaKodu[0][(len(DogrulamaKodu[0])-1)-i]
-                    break
-            if kod != "":
-                print(f"Ek Karar -> {kod}")
-                result = kod
-            else:
-                print("else1")
-                pattern = r"Do[gĞ]rulama\s*Kod[u]?\s*[:]\s*(?:\d-)?\s*([A-Za-z0-9]+)"
-                DogrulamaKodu = re.findall(pattern, metin,re.IGNORECASE)
-                if DogrulamaKodu:
-                    print(f"Doğrulama -> {DogrulamaKodu[0]}")
-                    result = DogrulamaKodu[0]
-        else:
-            print("else2")
-            pattern = r"Do[gĞ]rulama\s*Kod[u]?\s*[:]\s*(?:\d-)?\s*([A-Za-z0-9]+)"
-            DogrulamaKodu = re.findall(pattern, metin,re.IGNORECASE)
-            if DogrulamaKodu:
-                print(f"Doğrulama -> {DogrulamaKodu[0]}")
-                result = DogrulamaKodu[0]
-
-        def check_string(s):
-            pattern = r'^[A-Z0-9]{20}$'
-            return re.match(pattern, s) is not None
-
-        if check_string(result):
-            return result
-        else:
-            print("else3")
-            return "Tanimlanamadi"
-    except:
-        return "Tanimlanamadi"
+    return result
